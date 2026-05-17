@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_URL = "http://127.0.0.1:8000/paiements"
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
 
 export const getPaiements = async (id_annee = null) => {
   const url = id_annee ? `${API_URL}/?id_annee=${id_annee}` : `${API_URL}/`

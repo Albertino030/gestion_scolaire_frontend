@@ -1,7 +1,7 @@
 // src/api/suivi_formation.js
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
 
 export const getApi = async (endpoint) => {
   try {
