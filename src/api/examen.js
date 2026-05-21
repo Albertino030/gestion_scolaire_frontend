@@ -5,7 +5,7 @@ const API = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is
 // =====================
 // ANNEE ACTIVE
 // =====================
-export const getAnneeActive = () => axios.get(`${API}/annee/active`);
+export const getAnneeActive = () => axios.get(`${API}/annees/active`);
 
 // =====================
 // NOTES
