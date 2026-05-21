@@ -19,6 +19,7 @@ import {
 } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { getDashboardComplet } from "../api/Dashboard";
+import { getAnnees } from "../api/AnneeScolaire";
 
 ChartJS.register(
   CategoryScale,
@@ -126,18 +127,16 @@ const AnneeScolaireTable = ({ annees, onEdit, onDelete, onAdd }) => {
           <tbody className="divide-y divide-gray-200">
             {annees && annees.length > 0 ? (
               annees.map((annee) => (
-                <tr key={annee.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-sm text-gray-600">{annee.id}</td>
+                <tr key={annee.id_annee} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm text-gray-600">{annee.id_annee}</td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-800">{annee.libelle}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{annee.date_debut || '-'}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{annee.date_fin || '-'}</td>
                   <td className="px-4 py-3 text-sm">
                     <span className={`px-2 py-1 text-xs rounded-full ${
-                      annee.status === 'actif' 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-gray-100 text-gray-700'
+                      annee.actif ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                     }`}>
-                      {annee.status === 'actif' ? 'Actif' : 'Inactif'}
+                      {annee.actif ? 'Actif' : 'Inactif'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm">
@@ -149,7 +148,7 @@ const AnneeScolaireTable = ({ annees, onEdit, onDelete, onAdd }) => {
                         <Edit size={16} />
                       </button>
                       <button 
-                        onClick={() => onDelete(annee.id)}
+                        onClick={() => onDelete(annee.id_annee)}
                         className="p-1 text-red-600 hover:text-red-800 transition-colors"
                       >
                         <Trash2 size={16} />
@@ -185,14 +184,17 @@ export default function Dashboard() {
     
     setLoading(true);
     try {
+      // Récupérer les stats du dashboard
       const result = await getDashboardComplet();
       console.log("Données API chargées:", result);
       
+      // Récupérer les années scolaires
+      const anneesResult = await getAnnees();
+      console.log("Années scolaires:", anneesResult);
+      
       if (result) {
         setData(result);
-        if (result.annees_scolaires) {
-          setAnneesScolaires(result.annees_scolaires);
-        }
+        setAnneesScolaires(Array.isArray(anneesResult) ? anneesResult : []);
         setDataFetched(true);
       } else {
         setError("Impossible de charger les données");

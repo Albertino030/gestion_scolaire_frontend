@@ -1,9 +1,11 @@
+// api/AnneeScolaire.js
 const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
+
 // =========================
 // GET ALL ANNÉES
 // =========================
 export async function getAnnees() {
-  const res = await fetch(`${API_URL}/`)
+  const res = await fetch(`${API_URL}/annees/`)
   return await res.json()
 }
 
@@ -11,7 +13,7 @@ export async function getAnnees() {
 // GET ANNÉE ACTIVE
 // =========================
 export async function getAnneeActive() {
-  const res = await fetch(`${API_URL}/active`)
+  const res = await fetch(`${API_URL}/annees/active`)
   return await res.json()
 }
 
@@ -19,7 +21,7 @@ export async function getAnneeActive() {
 // AJOUT ANNÉE
 // =========================
 export async function addAnnee(data) {
-  const res = await fetch(`${API_URL}/`, {
+  const res = await fetch(`${API_URL}/annees/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -34,7 +36,7 @@ export async function addAnnee(data) {
 // ACTIVER ANNÉE
 // =========================
 export async function activerAnnee(id) {
-  const res = await fetch(`${API_URL}/activer/${id}`, {
+  const res = await fetch(`${API_URL}/annees/activer/${id}`, {
     method: "PUT"
   })
 
@@ -45,7 +47,7 @@ export async function activerAnnee(id) {
 // UPDATE ANNÉE
 // =========================
 export async function updateAnnee(id, data) {
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await fetch(`${API_URL}/annees/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
@@ -60,7 +62,7 @@ export async function updateAnnee(id, data) {
 // DELETE ANNÉE
 // =========================
 export async function deleteAnnee(id) {
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await fetch(`${API_URL}/annees/${id}`, {
     method: "DELETE"
   })
 

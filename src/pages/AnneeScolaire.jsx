@@ -30,7 +30,7 @@ export default function AnneeScolaire() {
   const fetchAnnees = async () => {
     setLoading(true)
     try {
-      const res = await fetch("${API_URL}/annees/")
+      const res = await fetch(`${API_URL}/annees/`)
       const data = await res.json()
       setAnnees(data)
       updateStats(data)
@@ -62,7 +62,7 @@ export default function AnneeScolaire() {
     if (!form.libelle) { showMessage("⚠️ Le libellé est obligatoire", "error"); return }
     setLoading(true)
     try {
-      await fetch("${API_URL}/annees/", {
+      await fetch(`${API_URL}/annees/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, actif: false })
