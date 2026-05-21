@@ -54,7 +54,7 @@ import autoTable from 'jspdf-autotable';
 const API = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
 
 export default function Examen() {
-  const [activeTab, setActiveTab] = useState("notes"); // 'notes' or 'deliberation'
+  const [activeTab, setActiveTab] = useState("notes");
   const [notes, setNotes] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -89,15 +89,14 @@ export default function Examen() {
   const tableContainerRef = useRef(null);
   const [anneeActive, setAnneeActive] = useState(null);
   
-  // États pour la délibération
   const [moyennesAnnuelles, setMoyennesAnnuelles] = useState([]);
   const [deliberations, setDeliberations] = useState({});
   const [savingDeliberation, setSavingDeliberation] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [studentToExpel, setStudentToExpel] = useState(null);
-  const [moyenneDeliberation, setMoyenneDeliberation] = useState(10); // Valeur par défaut 10/20
+  const [moyenneDeliberation, setMoyenneDeliberation] = useState(10);
   const [showPassantList, setShowPassantList] = useState(false);
-  const [filtreStatut, setFiltreStatut] = useState("tous"); // 'tous', 'passe', 'redouble', 'renvoye'
+  const [filtreStatut, setFiltreStatut] = useState("tous");
 
   const [form, setForm] = useState({
     numero_matricule: "",
@@ -106,7 +105,6 @@ export default function Examen() {
     notes: {},
   });
 
-  // Coefficients des examens
   const examenCoefficients = {
     "Examen 1": 1,
     "Examen 2": 2,
@@ -116,7 +114,6 @@ export default function Examen() {
     "Examen 6": 2
   };
 
-  // Gestion du clic extérieur pour le menu export
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -132,7 +129,6 @@ export default function Examen() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Effacer les messages après quelques secondes
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => setErrorMessage(""), 4000);
@@ -147,7 +143,6 @@ export default function Examen() {
     }
   }, [successMessage]);
 
-  // Calculer la position du menu export
   const updateExportMenuPosition = () => {
     if (exportButtonRef.current) {
       const rect = exportButtonRef.current.getBoundingClientRect();
@@ -165,7 +160,6 @@ export default function Examen() {
     setShowExportMenu(!showExportMenu);
   };
 
-  // Charger l'année active
   const loadAnneeActive = async () => {
     try {
       const res = await getAnneeActive();
@@ -175,7 +169,6 @@ export default function Examen() {
     }
   };
 
-  // Charger les délibérations existantes
   const loadDeliberations = async () => {
     if (!deliberationFilters.filiere || !deliberationFilters.niveau) return;
     try {
@@ -262,12 +255,14 @@ export default function Examen() {
     }
   };
 
+  // ✅ CORRECTION 1 : loadExamens transforme les objets en strings
   const loadExamens = async () => {
     try {
       const res = await getExamensByAnnee(anneeActive?.id_annee);
-      setExamensList(res.data || []);
       if (res.data && res.data.length > 0) {
-        setFilters(prev => ({ ...prev, examen: res.data[0] }));
+        const examensNoms = res.data.map(e => e.nom_examen);
+        setExamensList(examensNoms);
+        setFilters(prev => ({ ...prev, examen: examensNoms[0] }));
       } else {
         setExamensList(["Examen 1", "Examen 2", "Examen 3", "Examen 4", "Examen 5", "Examen 6"]);
         setFilters(prev => ({ ...prev, examen: "Examen 1" }));
@@ -286,7 +281,6 @@ export default function Examen() {
     }
   }, [filters.filiere, filters.niveau, filters.examen, anneeActive]);
 
-  // Calculer la moyenne générale annuelle pour un étudiant
   const calculerMoyenneAnnuelle = (notesParExamen) => {
     let totalPondere = 0;
     let totalCoeffs = 0;
@@ -305,7 +299,6 @@ export default function Examen() {
     return totalCoeffs > 0 ? totalPondere / totalCoeffs : 0;
   };
 
-  // Charger les moyennes annuelles pour la délibération
   const loadMoyennesAnnuelles = async () => {
     setLoading(true);
     try {
@@ -316,10 +309,8 @@ export default function Examen() {
       );
       const data = res.data || [];
       
-      // Calculer les moyennes annuelles
       const avecMoyenne = data.map(etudiant => {
         const moyenneAnnuelle = calculerMoyenneAnnuelle(etudiant.notes_par_examen || {});
-        // Proposition automatique basée sur la moyenne de délibération
         let statutPropose = "en_attente";
         if (moyenneAnnuelle >= moyenneDeliberation) {
           statutPropose = "passe";
@@ -336,7 +327,6 @@ export default function Examen() {
         };
       });
       
-      // Trier par moyenne décroissante
       const tries = [...avecMoyenne].sort((a, b) => b.moyenne_annuelle - a.moyenne_annuelle);
       setMoyennesAnnuelles(tries);
     } catch (error) {
@@ -391,7 +381,6 @@ export default function Examen() {
     }
   };
 
-  // Sauvegarder le statut de délibération
   const handleSaveDeliberation = async (numero_matricule, statut) => {
     setSavingDeliberation(true);
     try {
@@ -421,7 +410,6 @@ export default function Examen() {
     }
   };
 
-  // Appliquer le seuil de délibération à tous les étudiants
   const applyDeliberationThreshold = () => {
     const nouvellesDelibs = {};
     moyennesAnnuelles.forEach(etudiant => {
@@ -446,7 +434,6 @@ export default function Examen() {
     setSuccessMessage(`✅ Seuil de délibération appliqué : ${moyenneDeliberation}/20`);
   };
 
-  // Sauvegarder toutes les délibérations
   const handleSaveAllDeliberations = async () => {
     setSavingDeliberation(true);
     try {
@@ -472,7 +459,6 @@ export default function Examen() {
     }
   };
 
-  // Gérer le renvoi d'un étudiant
   const handleExpelStudent = (etudiant) => {
     setStudentToExpel(etudiant);
     setShowConfirmModal(true);
@@ -504,13 +490,11 @@ export default function Examen() {
     }
   };
 
-  // Filtrer les étudiants par statut
   const getFilteredStudents = () => {
     if (filtreStatut === "tous") return moyennesAnnuelles;
     return moyennesAnnuelles.filter(e => e.statut === filtreStatut);
   };
 
-  // Exporter la liste des passants en PDF
   const exportPassantListPDF = () => {
     const passants = moyennesAnnuelles.filter(e => e.statut === "passe");
     if (passants.length === 0) {
@@ -701,6 +685,7 @@ export default function Examen() {
     setLoading(true);
 
     try {
+      // ✅ CORRECTION 2 : Utiliser findIndex car examensList est maintenant un tableau de strings
       const examenId = examensList.indexOf(filters.examen) + 1 || 1;
       
       await addNotes({
@@ -740,7 +725,6 @@ export default function Examen() {
     }
   };
 
-  // Exports (garde les fonctions existantes)
   const exportToPDF = () => {
     if (!notes || notes.length === 0) {
       setErrorMessage("Aucune donnée à exporter");
@@ -1056,7 +1040,6 @@ export default function Examen() {
     );
   };
 
-  // Composant pour l'onglet Délibération
   const DeliberationTab = () => {
     const filteredStudents = getFilteredStudents();
     const statsPassage = {
@@ -1069,7 +1052,6 @@ export default function Examen() {
 
     return (
       <div className="space-y-4">
-        {/* Filtres délibération */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <select
@@ -1087,7 +1069,6 @@ export default function Examen() {
               {niveauxList.map(n => <option key={n}>{n}</option>)}
             </select>
             
-            {/* Champ pour définir la moyenne de délibération */}
             <div className="flex items-center gap-2">
               <div className="flex-1 relative">
                 <label className="absolute -top-2 left-2 px-1 text-[9px] font-semibold text-gray-500 bg-white">Seuil délibération</label>
@@ -1112,7 +1093,6 @@ export default function Examen() {
           </div>
         </div>
 
-        {/* Statistiques de délibération */}
         {moyennesAnnuelles.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-3 text-white">
@@ -1149,7 +1129,6 @@ export default function Examen() {
           </div>
         )}
 
-        {/* Filtres par statut */}
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFiltreStatut("tous")}
@@ -1183,7 +1162,6 @@ export default function Examen() {
           </button>
         </div>
 
-        {/* Tableau des passants (affiché quand showPassantList est true) */}
         {showPassantList && filteredStudents.length > 0 && filteredStudents[0]?.statut === "passe" && (
           <div className="bg-white rounded-xl shadow-sm border border-emerald-200 overflow-hidden animate-fade-in-up">
             <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-4 py-2 flex justify-between items-center">
@@ -1243,7 +1221,6 @@ export default function Examen() {
           </div>
         )}
 
-        {/* Tableau de délibération principal */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -1254,7 +1231,7 @@ export default function Examen() {
                   <th className="px-4 py-3 text-center">Moyenne Annuelle</th>
                   <th className="px-4 py-3 text-center">Statut Actuel</th>
                   <th className="px-4 py-3 text-center">Actions</th>
-                 </tr>
+                </tr>
               </thead>
               <tbody>
                 {loading ? (
@@ -1335,7 +1312,6 @@ export default function Examen() {
           </div>
         </div>
 
-        {/* Bouton sauvegarde massive */}
         {moyennesAnnuelles.length > 0 && (
           <div className="flex justify-end gap-3">
             <button
@@ -1356,7 +1332,6 @@ export default function Examen() {
           </div>
         )}
 
-        {/* Modal confirmation renvoi */}
         {showConfirmModal && studentToExpel && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] animate-fade-in">
             <div className="bg-white rounded-xl max-w-md w-full mx-4 overflow-hidden animate-scale-in">
@@ -1416,7 +1391,6 @@ export default function Examen() {
     <div className="h-full bg-gradient-to-br from-gray-50 to-gray-100">
       <ExportMenuPortal />
 
-      {/* Messages d'erreur et de succès */}
       {errorMessage && (
         <div className="fixed top-4 right-4 z-[99998] flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium shadow-lg animate-slide-down bg-red-500 text-white">
           <AlertCircle size={14} />
@@ -1433,7 +1407,6 @@ export default function Examen() {
 
       <div className="p-2 md:p-3 lg:p-4">
 
-        {/* Onglets */}
         <div className="flex gap-2 mb-4 border-b border-gray-200">
           <button
             onClick={() => setActiveTab("notes")}
@@ -1457,10 +1430,8 @@ export default function Examen() {
           </button>
         </div>
 
-        {/* Contenu selon l'onglet */}
         {activeTab === "notes" ? (
           <>
-            {/* Header compact */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2.5 mb-3 animate-slide-down">
               <div className="flex flex-wrap justify-between items-center gap-2">
                 <div className="flex items-center gap-2">
@@ -1500,7 +1471,6 @@ export default function Examen() {
               </div>
             </div>
 
-            {/* Stats cards mini */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 hover:shadow-md transition-all hover:scale-105 animate-slide-up">
                 <div className="flex items-center justify-between">
@@ -1543,7 +1513,6 @@ export default function Examen() {
               </div>
             </div>
 
-            {/* Search and filter bar */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-3 overflow-hidden animate-slide-up" style={{ animationDelay: "400ms" }}>
               <div className="p-2">
                 <div className="flex flex-wrap gap-2">
@@ -1601,7 +1570,6 @@ export default function Examen() {
                     >
                       {niveauxList.map(n => <option key={n}>{n}</option>)}
                     </select>
-// Dans la partie où vous affichez la liste des examens (filtres)
                     <select
                       className="px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 outline-none"
                       value={filters.examen}
@@ -1609,8 +1577,8 @@ export default function Examen() {
                     >
                       {examensList && examensList.length > 0 ? (
                         examensList.map(examen => (
-                          <option key={examen.id_examen} value={examen.nom_examen}>
-                            {examen.nom_examen}
+                          <option key={examen} value={examen}>
+                            {examen}
                           </option>
                         ))
                       ) : (
@@ -1622,7 +1590,6 @@ export default function Examen() {
               </div>
             </div>
 
-            {/* Table compact */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in-up" style={{ animationDelay: "500ms" }}>
               {showScrollButtons && matieres.length > 3 && (
                 <div className="flex items-center justify-between gap-1 p-1.5 border-b border-gray-100 bg-gray-50">
@@ -1746,7 +1713,6 @@ export default function Examen() {
               </div>
             </div>
 
-            {/* Modal Stats détaillées */}
             {showStatsModal && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 animate-fade-in">
                 <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-xl">
@@ -1840,7 +1806,6 @@ export default function Examen() {
               </div>
             )}
 
-            {/* Modal Form compact */}
             {showForm && (
               <div className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 ${formAnimating ? 'animate-fade-out' : 'animate-fade-in'}`}>
                 <div className={`bg-white rounded-xl w-full max-w-sm shadow-xl ${formAnimating ? 'animate-scale-out' : 'animate-scale-in'}`}>
