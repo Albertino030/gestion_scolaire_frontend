@@ -45,7 +45,7 @@ export default function Etudiants() {
   const [studentToDelete, setStudentToDelete] = useState(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
-  const [successAction, setSuccessAction] = useState("") // "add", "edit", "delete"
+  const [successAction, setSuccessAction] = useState("")
   const [deleting, setDeleting] = useState(false)
 
   const filieres = [
@@ -129,7 +129,6 @@ export default function Etudiants() {
     setMessageType(type)
   }
 
-  // Afficher la modale de succès
   const showSuccessModalMessage = (action, studentName = "") => {
     let msg = ""
     switch(action) {
@@ -149,13 +148,11 @@ export default function Etudiants() {
     setSuccessAction(action)
     setShowSuccessModal(true)
     
-    // Fermer automatiquement après 3 secondes
     setTimeout(() => {
       setShowSuccessModal(false)
     }, 3000)
   }
 
-  // Rechercher un étudiant par matricule pour PDF individuel
   const searchStudentByMatricule = () => {
     if (!searchMatricule.trim()) {
       showToast("Veuillez entrer un matricule", "error")
@@ -170,7 +167,6 @@ export default function Etudiants() {
     }
   }
 
-  // PDF générique avec tailles de police agrandies
   const generateStyledPDF = (doc, title, filteredData, subtitle = "") => {
     const pageW = doc.internal.pageSize.width
 
@@ -251,7 +247,6 @@ export default function Etudiants() {
     })
   }
 
-  // Générer PDF pour un seul étudiant (par recherche de matricule)
   const generateSingleStudentPDF = (etudiant) => {
     setPdfGenerating(true)
     setShowPdfOptions(false)
@@ -267,7 +262,6 @@ export default function Etudiants() {
       const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
       const pageW = doc.internal.pageSize.width
 
-      // En-tête
       doc.setFontSize(16)
       doc.setTextColor(0, 51, 102)
       doc.setFont("helvetica", "bold")
@@ -285,7 +279,6 @@ export default function Etudiants() {
 
       let y = 45
 
-      // Informations personnelles
       doc.setFontSize(11)
       doc.setTextColor(0, 51, 102)
       doc.setFont("helvetica", "bold")
@@ -316,7 +309,6 @@ export default function Etudiants() {
 
       y += 4
 
-      // Informations académiques
       doc.setFontSize(11)
       doc.setTextColor(0, 51, 102)
       doc.setFont("helvetica", "bold")
@@ -343,7 +335,6 @@ export default function Etudiants() {
 
       y += 4
 
-      // Projet professionnel
       if (etudiant.projet_professionnel) {
         doc.setFontSize(11)
         doc.setTextColor(0, 51, 102)
@@ -361,7 +352,6 @@ export default function Etudiants() {
         y += lines.length * 5
       }
 
-      // Famille
       y += 4
       doc.setFontSize(11)
       doc.setTextColor(0, 51, 102)
@@ -387,7 +377,6 @@ export default function Etudiants() {
         y += 6
       })
 
-      // Pied de page
       const pageH = doc.internal.pageSize.height
       doc.setFontSize(8)
       doc.setTextColor(150, 150, 150)
@@ -396,7 +385,6 @@ export default function Etudiants() {
       doc.save(`etudiant_${etudiant.numero_matricule}_${etudiant.nom}_${etudiant.prenom}.pdf`)
       showToast("✅ Fiche individuelle générée avec succès !")
       
-      // Réinitialiser la recherche
       setSearchMatricule("")
       setFoundStudent(null)
     } catch (error) {
@@ -407,7 +395,6 @@ export default function Etudiants() {
     }
   }
 
-  // Générer PDF par niveau ET filière
   const generatePDFByNiveauAndFiliere = () => {
     setPdfGenerating(true)
     setShowPdfOptions(false)
@@ -432,7 +419,6 @@ export default function Etudiants() {
     }
 
     try {
-      // Filtrer par niveaux sélectionnés ET par filière sélectionnée
       const filteredData = data.filter(e => 
         selectedNiveaux.includes(e.niveau) && e.nom_filiere === selectedFiliere
       )
@@ -456,7 +442,6 @@ export default function Etudiants() {
       doc.save(`etudiants_${selectedFiliere}_${selectedNiveaux.join("_")}_${Date.now()}.pdf`)
       showToast("✅ PDF généré avec succès !")
       
-      // Réinitialiser la sélection
       setSelectedNiveaux([])
       setSelectedFiliere("")
     } catch (error) {
@@ -578,9 +563,10 @@ export default function Etudiants() {
       projet_professionnel: form.projet_professionnel
     }
 
+    // ✅ CORRECTION : Supprimer les guillemets autour de ${API_URL}
     const url = editMode
       ? `${API_URL}/etudiants/${selectedId}`
-      : "${API_URL}/etudiants/"
+      : `${API_URL}/etudiants/`
 
     setLoading(true)
     try {
@@ -635,7 +621,6 @@ export default function Etudiants() {
     })
   }
 
-  // Fonction de suppression avec confirmation
   const confirmDelete = (etudiant) => {
     setStudentToDelete(etudiant)
     setShowConfirmDelete(true)
@@ -698,7 +683,6 @@ export default function Etudiants() {
     niveau: "Niveau *", projet_professionnel: "Projet pro."
   }
 
-  // Modale de confirmation de suppression
   const ConfirmDeleteModal = () => {
     if (!showConfirmDelete) return null
     return createPortal(
@@ -748,7 +732,6 @@ export default function Etudiants() {
     )
   }
 
-  // Modale de succès
   const SuccessModal = () => {
     if (!showSuccessModal) return null
     
@@ -806,7 +789,6 @@ export default function Etudiants() {
     )
   }
 
-  // Sélecteur Niveau + Filière pour PDF
   const NiveauFiliereSelectorPortal = () => {
     if (!showNiveauFiliereSelector) return null
     return createPortal(
@@ -855,8 +837,7 @@ export default function Etudiants() {
                   : data.filter(e => e.niveau === niveau).length
                 return (
                   <label key={niveau} className="flex items-center gap-2 mb-2 cursor-pointer">
-                    <input
-                      type="checkbox"
+                    <input                      type="checkbox"
                       checked={selectedNiveaux.includes(niveau)}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -913,7 +894,6 @@ export default function Etudiants() {
     )
   }
 
-  // Sélecteur pour PDF individuel par matricule
   const SingleStudentSearchPortal = () => {
     if (!showSingleStudentSearch) return null
     return createPortal(
@@ -1076,14 +1056,12 @@ export default function Etudiants() {
     <div className="h-full bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="p-2 sm:p-3 lg:p-4">
 
-        {/* Toast message */}
         {message && (
           <div className={`fixed top-2 right-2 z-50 animate-slide-down px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-medium shadow-lg ${messageType === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
             {message}
           </div>
         )}
 
-        {/* Header */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 sm:p-2.5 mb-3 animate-slide-down">
           <div className="flex justify-between items-center flex-wrap gap-2">
             <div className="flex items-center gap-2">
@@ -1127,7 +1105,6 @@ export default function Etudiants() {
           </div>
         </div>
 
-        {/* Stats cards */}
         <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 mb-3">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 hover:shadow-md transition-all hover:scale-105 animate-slide-up" style={{ animationDelay: "0ms" }}>
             <div className="flex items-center justify-between">
@@ -1175,7 +1152,6 @@ export default function Etudiants() {
           </div>
         </div>
 
-        {/* Search and filters bar */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-3 overflow-hidden animate-slide-up" style={{ animationDelay: "300ms" }}>
           <div className="p-2 border-b border-gray-200">
             <div className="flex flex-col xs:flex-row gap-2">
@@ -1231,7 +1207,6 @@ export default function Etudiants() {
           )}
         </div>
 
-        {/* Tableau */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in-up" style={{ animationDelay: "400ms" }}>
           <div className="overflow-x-auto" style={{ maxHeight: "calc(100vh - 380px)" }}>
             <div className="min-w-[1000px] lg:min-w-0">
@@ -1319,7 +1294,6 @@ export default function Etudiants() {
           </div>
         </div>
 
-        {/* Modal Form */}
         {showForm && (
           <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9998] p-2 ${formAnimating ? 'animate-fade-out' : 'animate-fade-in'}`}>
             <div className={`bg-white rounded-xl w-full max-w-[95%] xs:max-w-lg sm:max-w-2xl max-h-[90vh] flex flex-col shadow-xl ${formAnimating ? 'animate-scale-out' : 'animate-scale-in'}`}>
@@ -1448,7 +1422,6 @@ export default function Etudiants() {
           </div>
         )}
 
-        {/* Modal Details */}
         {showDetails && selectedEtudiant && (
           <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9998] p-2 ${detailsAnimating ? 'animate-fade-out' : 'animate-fade-in'}`}>
             <div className={`bg-white rounded-xl w-full max-w-[90%] xs:max-w-sm shadow-xl ${detailsAnimating ? 'animate-scale-out' : 'animate-scale-in'}`}>
