@@ -215,7 +215,7 @@ export default function Presence() {
     
     try {
       if (!editMode) {
-        const response = await fetch('${API_URL}/presence/', {
+        const response = await fetch(`${API_URL}/presence/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

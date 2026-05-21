@@ -86,7 +86,7 @@ export default function Etudiants() {
 
   const fetchAnneeActive = async () => {
     try {
-      const res = await fetch('${API_URL}/annees/active')
+      const res = await fetch(`${API_URL}/annees/active`)
       const data = await res.json()
       setAnneeActive(data)
       return data

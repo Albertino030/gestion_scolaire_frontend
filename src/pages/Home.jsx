@@ -12,6 +12,8 @@ import image6 from '../logo/image 6.png';
 import image7 from '../logo/image 7.png';
 import { login } from '../api/auth';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
+
 const cardData = [
   { img: image1, title: 'Maçon Polyvalent', desc: 'Formation aux techniques de construction et maçonnerie', btn: 'Voir la Filière' },
   { img: image2, title: 'Hôtellerie', desc: 'Formation aux métiers de l\'accueil et de la restauration', btn: 'Voir la Filière' },
@@ -66,7 +68,7 @@ const ResetPasswordComponent = ({ onBackToHome }) => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:8000/auth/reset-password', {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, new_password: newPassword }),
@@ -292,7 +294,7 @@ const Home = () => {
     if (registerData.password !== registerData.confirmPassword) { setRegisterError('Les mots de passe ne correspondent pas'); setRegisterLoading(false); return; }
     if (registerData.password.length < 6) { setRegisterError('Le mot de passe doit contenir au moins 6 caractères'); setRegisterLoading(false); return; }
     try {
-      const response = await fetch('http://localhost:8000/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nom: registerData.nom, prenom: registerData.prenom, email: registerData.email, password: registerData.password, role: registerData.role }),
       });
@@ -313,7 +315,7 @@ const Home = () => {
     setForgotError(''); setForgotSuccess(''); setForgotLoading(true);
     if (!forgotEmail) { setForgotError('Veuillez entrer votre email'); setForgotLoading(false); return; }
     try {
-      const response = await fetch('http://localhost:8000/auth/forgot-password', {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail }),
       });
