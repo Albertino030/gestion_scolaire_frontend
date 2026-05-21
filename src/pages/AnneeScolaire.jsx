@@ -6,6 +6,9 @@ import {
   RotateCcw, Zap, Shield, Star, Award, Edit, Trash2, HelpCircle
 } from "lucide-react"
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
+
+
 export default function AnneeScolaire() {
   const [annees, setAnnees] = useState([])
   const [search, setSearch] = useState("")
@@ -27,7 +30,7 @@ export default function AnneeScolaire() {
   const fetchAnnees = async () => {
     setLoading(true)
     try {
-      const res = await fetch("http://127.0.0.1:8000/annees/")
+      const res = await fetch("${API_URL}/annees/")
       const data = await res.json()
       setAnnees(data)
       updateStats(data)
@@ -59,7 +62,7 @@ export default function AnneeScolaire() {
     if (!form.libelle) { showMessage("⚠️ Le libellé est obligatoire", "error"); return }
     setLoading(true)
     try {
-      await fetch("http://127.0.0.1:8000/annees/", {
+      await fetch("${API_URL}/annees/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, actif: false })
@@ -83,7 +86,7 @@ export default function AnneeScolaire() {
   const confirmActivation = async () => {
     setLoading(true)
     try {
-      await fetch(`http://127.0.0.1:8000/annees/activer/${selectedAnnee.id_annee}`, { method: "PUT" })
+      await fetch(`${API_URL}/annees/activer/${selectedAnnee.id_annee}`, { method: "PUT" })
       showMessage(`✨ Année "${selectedAnnee.libelle}" activée avec succès`, "success")
       setShowActivateModal(false)
       setSelectedAnnee(null)
@@ -107,7 +110,7 @@ export default function AnneeScolaire() {
   const confirmDelete = async () => {
     setLoading(true)
     try {
-      await fetch(`http://127.0.0.1:8000/annees/${selectedAnnee.id_annee}`, { method: "DELETE" })
+      await fetch(`${API_URL}/annees/${selectedAnnee.id_annee}`, { method: "DELETE" })
       showMessage(`🗑️ Année "${selectedAnnee.libelle}" supprimée`, "success")
       setShowDeleteModal(false)
       setSelectedAnnee(null)
@@ -132,7 +135,7 @@ export default function AnneeScolaire() {
     }
     setLoading(true)
     try {
-      await fetch(`http://127.0.0.1:8000/annees/${selectedAnnee.id_annee}`, {
+      await fetch(`${API_URL}/annees/${selectedAnnee.id_annee}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm)
@@ -677,18 +680,7 @@ export default function AnneeScolaire() {
 // Composant Archive
 function ArchiveIcon(props) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect width="20" height="5" x="2" y="3" rx="1" />
       <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
       <path d="M10 12h4" />
