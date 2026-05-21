@@ -1606,7 +1606,11 @@ export default function Examen() {
                       value={filters.examen}
                       onChange={(e) => setFilters({ ...filters, examen: e.target.value })}
                     >
-                      {examensList.map(e => <option key={e}>{e}</option>)}
+                      {examensList.map(examen => (
+                          <option key={examen.id_examen} value={examen.nom_examen}>
+                            {examen.nom_examen}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 )}
