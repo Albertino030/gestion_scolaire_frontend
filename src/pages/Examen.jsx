@@ -1601,16 +1601,21 @@ export default function Examen() {
                     >
                       {niveauxList.map(n => <option key={n}>{n}</option>)}
                     </select>
+// Dans la partie où vous affichez la liste des examens (filtres)
                     <select
                       className="px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-emerald-500 outline-none"
                       value={filters.examen}
                       onChange={(e) => setFilters({ ...filters, examen: e.target.value })}
                     >
-                      {examensList.map(examen => (
+                      {examensList && examensList.length > 0 ? (
+                        examensList.map(examen => (
                           <option key={examen.id_examen} value={examen.nom_examen}>
                             {examen.nom_examen}
                           </option>
-                        ))}
+                        ))
+                      ) : (
+                        <option value="">Chargement...</option>
+                      )}
                     </select>
                   </div>
                 )}
