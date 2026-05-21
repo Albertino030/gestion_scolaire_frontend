@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "${API_URL}";
 
 const api = {
   get: async (endpoint) => {

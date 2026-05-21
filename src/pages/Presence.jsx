@@ -88,7 +88,7 @@ export default function Presence() {
   // =========================
   const fetchAnneeActive = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/annees/")
+      const res = await fetch("${API_URL}/annees/")
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
       
       const data = await res.json()
@@ -107,7 +107,7 @@ export default function Presence() {
   const fetchData = async (anneeId) => {
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:8000/presence/?id_annee=${anneeId}`)
+      const res = await fetch(`${API_URL}/presence/?id_annee=${anneeId}`)
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
       const data = await res.json()
       setData(Array.isArray(data) ? data : [])
@@ -213,7 +213,7 @@ export default function Presence() {
     
     try {
       if (!editMode) {
-        const response = await fetch("http://127.0.0.1:8000/presence/", {
+        const response = await fetch("${API_URL}/presence/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -230,7 +230,7 @@ export default function Presence() {
         showSuccess("add", studentName)
       }
       else {
-        const response = await fetch(`http://127.0.0.1:8000/presence/${form.id}`, {
+        const response = await fetch(`${API_URL}/presence/${form.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -288,7 +288,7 @@ export default function Presence() {
     setDeleting(true)
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/presence/${presenceToDelete.id}`, {
+      const response = await fetch(`${API_URL}/presence/${presenceToDelete.id}`, {
         method: "DELETE"
       })
       

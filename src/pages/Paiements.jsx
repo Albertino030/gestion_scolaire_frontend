@@ -1102,7 +1102,7 @@ export default function Paiements() {
 
   const fetchAnneeActive = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/annees/active")
+      const res = await fetch("${API_URL}/annees/active")
       const annee = await res.json()
       setAnneeActive(annee)
       return annee

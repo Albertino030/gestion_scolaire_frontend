@@ -86,7 +86,7 @@ export default function Etudiants() {
 
   const fetchAnneeActive = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/annees/active")
+      const res = await fetch("${API_URL}/annees/active")
       const data = await res.json()
       setAnneeActive(data)
       return data
@@ -97,7 +97,7 @@ export default function Etudiants() {
     if (!annee) return
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:8000/etudiants/?id_annee=${annee.id_annee}`)
+      const res = await fetch(`${API_URL}/etudiants/?id_annee=${annee.id_annee}`)
       const json = await res.json()
       const dataArray = Array.isArray(json) ? json : []
       setData(dataArray)
@@ -522,7 +522,7 @@ export default function Etudiants() {
   const handleEdit = async (etudiant) => {
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:8000/etudiants/${etudiant.numero_matricule}`)
+      const res = await fetch(`${API_URL}/etudiants/${etudiant.numero_matricule}`)
       const data = await res.json()
       if (res.ok && !data.error) {
         setForm({
@@ -577,8 +577,8 @@ export default function Etudiants() {
     }
 
     const url = editMode
-      ? `http://127.0.0.1:8000/etudiants/${selectedId}`
-      : "http://127.0.0.1:8000/etudiants/"
+      ? `${API_URL}/etudiants/${selectedId}`
+      : "${API_URL}/etudiants/"
 
     setLoading(true)
     try {
@@ -644,7 +644,7 @@ export default function Etudiants() {
     
     setDeleting(true)
     try {
-      const res = await fetch(`http://127.0.0.1:8000/etudiants/${studentToDelete.numero_matricule}`, { method: "DELETE" })
+      const res = await fetch(`${API_URL}/etudiants/${studentToDelete.numero_matricule}`, { method: "DELETE" })
       const result = await res.json()
       if (res.ok && !result.error) {
         await fetchData(anneeActive)
