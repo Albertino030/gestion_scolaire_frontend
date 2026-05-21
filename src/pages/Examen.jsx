@@ -51,6 +51,8 @@ import {
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+const API = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
+
 export default function Examen() {
   const [activeTab, setActiveTab] = useState("notes"); // 'notes' or 'deliberation'
   const [notes, setNotes] = useState([]);

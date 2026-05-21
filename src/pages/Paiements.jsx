@@ -1102,7 +1102,7 @@ export default function Paiements() {
 
   const fetchAnneeActive = async () => {
     try {
-      const res = await fetch("${API_URL}/annees/active")
+      const res = await fetch(`${API_URL}/annees/active`)
       const annee = await res.json()
       setAnneeActive(annee)
       return annee

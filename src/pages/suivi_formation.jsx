@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_URL = `${API_URL}`;
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
 
 const api = {
   get: async (endpoint) => {

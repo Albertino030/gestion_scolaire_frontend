@@ -9,6 +9,8 @@ import { createPortal } from "react-dom"
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://gestion-scolaire-backend-is34.onrender.com';
+
 // =========================
 // DONNÉES FIXES UI
 // =========================
